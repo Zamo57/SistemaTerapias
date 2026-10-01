@@ -26,6 +26,10 @@ export function Login({
     if (error) onError(error.message);
     else {
       onNotice("Acceso confirmado");
+      if (recover) {
+        await supabase!.auth.signOut();
+        history.replaceState(null, "", location.pathname);
+      }
       setRecover(false);
     }
     setBusy(false);

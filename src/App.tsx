@@ -427,7 +427,10 @@ export default function App() {
   if (credentials && supabase)
     return (
       <AccountPassword
-        done={() => {
+        done={async () => {
+          // El enlace crea una sesión temporal; se cierra para que el siguiente
+          // paso sea iniciar sesión con la contraseña recién definida.
+          await supabase!.auth.signOut();
           setCredentials(false);
           history.replaceState(null, "", location.pathname);
           void refresh();

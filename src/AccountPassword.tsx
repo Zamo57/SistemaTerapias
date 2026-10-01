@@ -1,6 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { supabase } from "./data";
-export default function AccountPassword({ done }: { done: () => void }) {
+export default function AccountPassword({
+  done,
+}: {
+  done: () => void | Promise<void>;
+}) {
   const [password, setPassword] = useState(""),
     [confirm, setConfirm] = useState(""),
     [error, setError] = useState(""),
@@ -17,7 +21,7 @@ export default function AccountPassword({ done }: { done: () => void }) {
       setError(
         "No se pudo actualizar. El enlace puede haber expirado; solicitá uno nuevo.",
       );
-    else done();
+    else await done();
     setBusy(false);
   }
   return (
