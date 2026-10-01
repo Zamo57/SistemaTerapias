@@ -96,7 +96,7 @@ test("demostración no confirma guardados ficticios", async ({ page }) => {
     .getByRole("button", { name: "Nuevo paciente", exact: true })
     .click();
   await page.getByLabel("Número de identificación").fill("999999999");
-  await page.getByLabel("Nombre completo").fill("Paciente demo");
+  await page.getByLabel("Nombre (y otros nombres)").fill("Paciente demo");
   await page.getByRole("button", { name: "Guardar paciente" }).click();
   await expect(page.getByRole("alert")).toContainText("solo lectura");
   await expect(page.getByRole("dialog")).toBeVisible();

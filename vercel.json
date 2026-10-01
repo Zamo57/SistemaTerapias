@@ -1,4 +1,10 @@
 {
+  "rewrites": [
+    {
+      "source": "/api/cedula/:cedula",
+      "destination": "https://onyonqjatljkbytdxjmz.supabase.co/functions/v1/cedula/:cedula"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

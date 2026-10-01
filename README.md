@@ -142,3 +142,7 @@ Precios consultados el 30/09/2026: Supabase Free USD 0 con cuotas y pausa por in
 4. Planificada, sin activar: comunicaciones oficiales. Ver `docs/ETAPA_4.md`.
 
 Antes de usar datos reales: completar Supabase/SMTP, comprobar recuperación e invitaciones, validar política de privacidad y conservación con el responsable, ejecutar ensayo de respaldo del proveedor y comprobar el sonido en dispositivos reales. No se certifica cumplimiento legal automático. Guía de operación en `docs/GUIA_USO.md`; modelo en `docs/MODELO.md`.
+
+## Autocompletado GoMeta
+
+Implementado en la función Supabase `cedula`, migración 006 y formulario con nombre/apellidos editables. Caché privada, cuota compartida 20/5 minutos, límite por usuario y agrupación entre instancias. Activo local y remoto; documentación, pruebas sin consultas de personas y pasos locales en [docs/GOMETA.md](docs/GOMETA.md). Ninguna integración Didit.

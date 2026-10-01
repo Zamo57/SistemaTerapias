@@ -254,6 +254,14 @@ export default function App() {
     setDialog(
       <PatientForm
         initial={initial}
+        allowExternal={!demo}
+        onExisting={async (id) => {
+          const snapshot = await load();
+          setStore(snapshot);
+          setPatient(snapshot.patients.find((p) => p.id === id) || null);
+          setSection("Pacientes");
+          close();
+        }}
         save={(row) => action(() => insert("patients", row))}
         close={close}
       />,

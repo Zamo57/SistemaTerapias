@@ -58,3 +58,7 @@ No cerrar una nota pendiente. El mensaje Guardando… no significa que haya term
 La prueba de sonido permite habilitar audio después de un gesto del usuario. La alerta visible persiste; la sonora se repite cada 15 segundos hasta atenderla, si esta página permanece activa. Silenciar este dispositivo afecta su audio; Atendida guarda el reconocimiento de esa alarma para los demás dispositivos. No se garantiza alarma con pantalla bloqueada, pestaña en segundo plano o suspensión del sistema. Mantener una pantalla activa y comprobar físicamente el audio; usar un temporizador independiente si es esencial.
 
 Los campos admiten el dictado del teclado del dispositivo. No se envían notas a servicios de IA. Usar Tab para navegar y Escape para cerrar ventanas. Las animaciones respetan reducir movimiento.
+
+## Nombre sugerido por cédula
+
+En Nuevo paciente, una cédula física de nueve dígitos activa la búsqueda después de una breve espera. Un paciente registrado ofrece abrir su ficha. Para personas nuevas se consulta caché/GoMeta desde backend y se completan nombre y dos apellidos editables. Revisar antes de guardar: GoMeta es externo y esto no verifica identidad. Si no hay resultado, falla el servicio o se alcanza un límite, continuar manualmente. DIMEX/pasaporte no consultan el proveedor. Los expedientes anteriores conservan Nombre completo.

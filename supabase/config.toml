@@ -27,3 +27,6 @@ enable_confirmations = true
 # La función verifica el bearer con auth.getUser y permiso en la base.
 # Compatible con claves publishable que no son JWT del gateway.
 verify_jwt = false
+[functions.cedula]
+# Se verifica la sesión con Auth y staff() dentro de la función.
+verify_jwt = false

@@ -7,6 +7,12 @@ const credentials = JSON.parse(
   readFileSync(".local/supabase-admin.json", "utf8"),
 );
 const accounts = JSON.parse(readFileSync(".local/test-accounts.json", "utf8"));
+// Pruebas ficticias: impedir cualquier consulta real de identificación externa.
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/cedula/**", (route) =>
+    route.fulfill({ status: 404, json: { error: "not_found" } }),
+  );
+});
 if (!["localhost", "127.0.0.1"].includes(new URL(credentials.url).hostname))
   throw new Error("Las pruebas conectadas solo aceptan Supabase local.");
 const service = createClient(credentials.url, credentials.secret, {
@@ -67,7 +73,7 @@ test("flujo real: paciente, atención, historial, temporizador recargado, pago y
     .getByRole("button", { name: "Nuevo paciente", exact: true })
     .click();
   await page.getByLabel("Número de identificación").fill(doc);
-  await page.getByLabel("Nombre completo").fill(name);
+  await page.getByLabel("Nombre (y otros nombres)").fill(name);
   await page
     .getByRole("button", { name: "Guardar paciente", exact: true })
     .click();

@@ -89,3 +89,13 @@ Ejecutado scripts/verify-remote.mjs --execute con resultado aprobado: login de t
 Limpieza transaccional por UUID creados y eliminación de las tres identidades temporales aprobada. Recuento remoto posterior: pacientes, visitas, pagos, notas, terapias, perfiles y Auth users = 0. Docker conserva 7 pacientes, 22 visitas y 32 pagos. Tarifas remotas vacías preservadas; no se asumieron precios. RLS activa en las 16 tablas public. Registro público deshabilitado, función invite-user desplegada.
 
 Los dumps previos son copias lógicas; no acreditan restauración del proveedor ni un ensayo nuevo de restauración remota. Pendientes: cuentas reales/nombres/correos, SMTP y enlaces externos reales, política de respaldo y restauración del proveedor, audio físico Safari/iPhone/iPad, publicación HTTPS y revisión del ajuste específico GitHub de despliegue automático en el panel.
+
+## GoMeta — 1 octubre 2026
+
+Muestra real obtenida por el propietario, anonimizada conservando claves y tipos; datos personales adicionales sustituidos y archivo original eliminado. Script de captura corregido a UTF-8 BOM para Windows PowerShell. Migración 006 revisada, probada y aplicada primero en Docker, luego en remoto tras dumps previos privados. Función cedula activa en ambos. No hubo reset ni importación de datos locales.
+
+50 pruebas de lógica/PostgreSQL aprobadas: validación, exactitud del documento, parser de apellidos, caché vigente/vencida, timeout, 429/Retry-After, respuestas inesperadas, agrupación, ventana global y cuotas por usuario, RLS. 22 pruebas de navegador aprobadas en escritorio/móvil: carga, edición, respuesta tardía, cambio de identificación, duplicados y captura manual. Siete pruebas conectadas al backend local aprobadas; se interceptan las búsquedas ficticias para no enviarlas al proveedor. Edge Function real local y remota comprobadas con tres roles, caché ficticia, 400 inválido, 401 sin sesión, 409 paciente existente y permisos de caché/RPC. Cero consultas externas en esos ensayos. Limpieza remota confirmada: cero pacientes, usuarios y caché después de borrar solo los registros propios.
+
+Los mocks de GoMeta no equivalen a nuevas pruebas live del proveedor. La muestra del propietario acredita solo esa consulta puntual. Pendientes originales de SMTP externo, cuentas reales, respaldo/restauración del proveedor, audio Safari y publicación web HTTPS continúan sin aprobarse. Véase docs/GOMETA.md.
+
+La ruta propia /api/cedula también se comprobó contra el remoto mediante el proxy de Vite: autenticación, caché y paciente existente aprobados, sin consumo de GoMeta. Las últimas 22 pruebas de interfaz incluyen los tres estados de fallo y mantienen captura manual.

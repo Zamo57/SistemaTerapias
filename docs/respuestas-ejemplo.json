@@ -1,0 +1,44 @@
+{
+  "user": "FICTICIO",
+  "license": "FICTICIO",
+  "situacion": {
+    "mensaje": "FICTICIO",
+    "moroso": "FICTICIO",
+    "estado": "FICTICIO",
+    "omiso": "FICTICIO",
+    "administracionTributaria": ""
+  },
+  "hosted_by": "FICTICIO",
+  "query": "000000000",
+  "nombre": "PERSONA FICTICIA EJEMPLO PRUEBA",
+  "actividades": [],
+  "tipoIdentificacion": "01",
+  "cedula": "000000000",
+  "age": 0,
+  "regimen": {
+    "descripcion": "FICTICIO",
+    "codigo": 0
+  },
+  "source": "FICTICIO",
+  "database_date": "FICTICIO",
+  "resultcount": 1,
+  "results": [
+    {
+      "cedula": "000000000",
+      "firstname2": "FICTICIA",
+      "firstname1": "PERSONA",
+      "admin": "FICTICIO",
+      "guess_type": "FISICA",
+      "rawcedula": "000000000",
+      "fullname": "PERSONA FICTICIA EJEMPLO PRUEBA",
+      "guess_type_num": "01",
+      "class": "FICTICIO",
+      "lastname": "EJEMPLO PRUEBA",
+      "lastname1": "EJEMPLO",
+      "lastname2": "PRUEBA",
+      "firstname": "PERSONA FICTICIA",
+      "type": "F",
+      "temp": "FICTICIO"
+    }
+  ]
+}
