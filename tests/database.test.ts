@@ -333,6 +333,9 @@ describe("PostgreSQL: etapas 1, 2 y 3", () => {
     expect(clinicalSnapshot.payments).toHaveLength(0);
   });
   it("tarifas validan montos, último precio histórico y campos protegidos", async () => {
+    expect(
+      (await as(reception, "update rates set amount=1 where id=1 returning id")).rows,
+    ).toHaveLength(0);
     await expect(
       as(admin, `update rates set amount=-5 where id=1`),
     ).rejects.toThrow();
