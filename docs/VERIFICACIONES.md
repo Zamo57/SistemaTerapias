@@ -75,3 +75,7 @@ Las 22 pruebas de dominio/PGlite siguen usando identidades de prueba controladas
 - No se hizo una auditoría de accesibilidad WCAG completa ni certificación legal.
 
 El recolector técnico opcional Vector/Logflare se deshabilitó en el entorno local: Docker Desktop resolvía su conexión al daemon mediante una dirección IPv6 inaccesible. El arranque local excluye estos servicios. Esto no afecta los registros de auditoría de la aplicación en PostgreSQL. No se verificó un servicio externo de recopilación de logs.
+
+## Intento de conexión a nube — 1 octubre 2026
+
+Destino solicitado: SistemaTerapias. La CLI devuelve «Access token not provided» al listar proyectos. No se pudo verificar referencia, URL, tablas, políticas, historial ni integración GitHub del destino. La configuración administrativa privada sigue sin completar. No se cambiaron conexiones, no se aplicaron migraciones remotas y no se crearon registros remotos. Los resultados locales anteriores no acreditan pruebas en la nube. Pendientes: iniciar sesión mediante `npx supabase login`, inspeccionar/respaldar el destino, reconciliar migraciones, desplegar función y Auth, comprobar persistencia/RLS con datos de prueba propios y limpiarlos. SMTP externo, restauración del proveedor y audio físico Safari siguen pendientes.

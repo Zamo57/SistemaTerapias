@@ -4,6 +4,16 @@ Aplicación en español para un centro pequeño en Costa Rica. React + TypeScrip
 
 ## Versión funcional de prueba conectada
 
+### Nube solicitada: pendiente de autenticación (1 octubre 2026)
+
+El destino solicitado es **SistemaTerapias**, asociado según el panel del propietario a `Zamo57/SistemaTerapias`. Todavía no se verificaron su referencia ni su URL: `supabase projects list` informa que falta autenticación de la CLI. La sesión del navegador y la autenticación de GitHub no autentican la CLI de Supabase. La aplicación conserva su conexión local; no se ejecutaron migraciones ni pruebas remotas.
+
+Desde una terminal propia en esta carpeta, ejecutar `npx supabase login` y completar el flujo de navegador con la cuenta propietaria. No enviar tokens por chat ni guardarlos en Git. [Autenticación oficial](https://supabase.com/docs/guides/platform/personal-access-tokens).
+
+Antes de desplegar: identificar el proyecto exacto y comprobar su asociación con GitHub; inspeccionar tablas, políticas e historial; respaldar los datos existentes; revisar si la integración GitHub ya aplica migraciones y reconciliar las cinco migraciones locales con el destino. No aplicar la migración inicial sobre tablas existentes sin revisar compatibilidad, ni ejecutar un reset remoto. Conectar el frontend después de esa comprobación; mantener los datos ficticios locales en Docker. Las pruebas remotas deberán crear datos identificados y eliminar únicamente sus propios registros.
+
+Función administrativa, autenticación por invitación, pruebas remotas de persistencia/RLS, cuentas reales, SMTP externo y respaldos del proveedor continúan pendientes. Conectar Supabase cambia el backend; publicar la web requiere además alojamiento y configuración HTTPS.
+
 **Dirección: http://localhost:5174.** Está conectada a Supabase local en Docker (PostgreSQL 17, Auth, API y Edge Functions reales). No pulsar Explorar demostración para probar guardados: ingresar con una cuenta ficticia.
 
 Las tres cuentas de prueba y sus **contraseñas aleatorias distintas** están en `.local/test-accounts.json`, archivo privado excluido de Git y bloqueado por el servidor HTTP. Abrirlo en el editor local. Los correos son `admin.prueba@centro.example`, `terapeuta.prueba@centro.example` y `recepcion.prueba@centro.example`. Administración no tiene permiso clínico; recepción incluye cobros. Ninguna contraseña real o clave privilegiada se publica en esta documentación.
