@@ -1,0 +1,8 @@
+{
+  "origin": "https://dominio-del-centro.example",
+  "users": [
+    {"name":"Nombre real pendiente 1","email":"CAMBIAR-1","permissions":["admin"]},
+    {"name":"Nombre real pendiente 2","email":"CAMBIAR-2","permissions":["clinical"]},
+    {"name":"Nombre real pendiente 3","email":"CAMBIAR-3","permissions":["reception","finance"]}
+  ]
+}

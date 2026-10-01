@@ -1,0 +1,15 @@
+import {chromium} from '@playwright/test';
+import {mkdir} from 'node:fs/promises';
+await mkdir('docs/previews',{recursive:true});
+const browser=await chromium.launch();
+const page=await browser.newPage({viewport:{width:1440,height:1000}});
+await page.goto('http://localhost:5174');
+await page.getByRole('button',{name:'Explorar demostración'}).click();
+await page.screenshot({path:'docs/previews/inicio-desktop.png',fullPage:true});
+await page.getByRole('navigation').getByRole('button',{name:'Pacientes',exact:true}).click();
+await page.getByRole('button',{name:'María Ejemplo · FICTICIO',exact:true}).click();
+await page.screenshot({path:'docs/previews/expediente-desktop.png',fullPage:true});
+await page.setViewportSize({width:390,height:844});
+await page.getByRole('navigation').getByRole('button',{name:'Inicio',exact:true}).click();
+await page.screenshot({path:'docs/previews/inicio-mobile.png',fullPage:true});
+await browser.close();
