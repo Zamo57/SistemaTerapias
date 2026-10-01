@@ -1,5 +1,11 @@
 # Guía breve de uso
 
+## Conexión actual: nube
+
+http://localhost:5174 utiliza SistemaTerapias remoto (onyonqjatljkbytdxjmz), no Docker. Las cuentas ficticias locales no funcionan en este destino. Las tres cuentas usadas para verificar se eliminaron junto con sus registros. Para ingresar habitualmente, completar config/team.json, preparar SMTP y ejecutar el alta segura descrita en README. Las tarifas y catálogos requieren configuración real. La web todavía no está publicada en Internet.
+
+Las instrucciones de prueba siguientes corresponden al backend local: restaurar su configuración privada y reiniciar antes de utilizarlas. No ejecutar local:setup mientras se quiera mantener la conexión remota.
+
 ## Abrir la prueba funcional
 
 Abrir **http://localhost:5174** e ingresar, sin seleccionar Explorar demostración. Consultar el correo y la contraseña individual en `.local/test-accounts.json` mediante el editor de este equipo. No es un archivo público del navegador. Usar exclusivamente nombres/documentos ficticios.

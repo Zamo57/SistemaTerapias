@@ -4,17 +4,23 @@ Aplicación en español para un centro pequeño en Costa Rica. React + TypeScrip
 
 ## Versión funcional de prueba conectada
 
-### Nube solicitada: pendiente de autenticación (1 octubre 2026)
+### Conectada a SistemaTerapias remoto — 1 octubre 2026
 
-El destino solicitado es **SistemaTerapias**, asociado según el panel del propietario a `Zamo57/SistemaTerapias`. Todavía no se verificaron su referencia ni su URL: `supabase projects list` informa que falta autenticación de la CLI. La sesión del navegador y la autenticación de GitHub no autentican la CLI de Supabase. La aplicación conserva su conexión local; no se ejecutaron migraciones ni pruebas remotas.
+La aplicación de este equipo en **http://localhost:5174** utiliza **https://onyonqjatljkbytdxjmz.supabase.co**, referencia verificada en la cuenta autenticada y nombre exacto SistemaTerapias. [Tablas remotas](https://supabase.com/dashboard/project/onyonqjatljkbytdxjmz/editor). El frontend sigue ejecutándose localmente: todavía no se publicó una web HTTPS.
 
-Desde una terminal propia en esta carpeta, ejecutar `npx supabase login` y completar el flujo de navegador con la cuenta propietaria. No enviar tokens por chat ni guardarlos en Git. [Autenticación oficial](https://supabase.com/docs/guides/platform/personal-access-tokens).
+Se inspeccionó el destino antes de modificarlo: sin tablas/políticas en public, sin historial de migraciones, sin usuarios Auth ni archivos/buckets Storage. Copias previas de esquema y datos en backups/remote-20261001, privadas y fuera de Git. Se aplicaron 001_core, 002_import_and_hardening, 003_validation, 004_snapshot y 005_integrity; una segunda revisión confirma cero pendientes. No se ejecutó reset, no se importaron los fixtures locales y no se añadió automatización de despliegue en GitHub. La lista de ramas remotas estaba vacía; no se verificó el ajuste específico de despliegue automático del panel. El historial de migraciones ya coincide para evitar reaplicaciones por herramientas que lo respeten. [Migraciones oficiales](https://supabase.com/docs/guides/deployment/database-migrations).
 
-Antes de desplegar: identificar el proyecto exacto y comprobar su asociación con GitHub; inspeccionar tablas, políticas e historial; respaldar los datos existentes; revisar si la integración GitHub ya aplica migraciones y reconciliar las cinco migraciones locales con el destino. No aplicar la migración inicial sobre tablas existentes sin revisar compatibilidad, ni ejecutar un reset remoto. Conectar el frontend después de esa comprobación; mantener los datos ficticios locales en Docker. Las pruebas remotas deberán crear datos identificados y eliminar únicamente sus propios registros.
+Auth: registro público y anónimo deshabilitados, contraseña mínima 10, confirmación de correo, Site URL localhost:5174. invite-user desplegada con autorización JWT + permiso administrativo en base de datos; APP_ORIGIN localhost:5174. La URL y clave pública están en .env.local; la clave administrativa solo en .env.admin.local y archivos privados de verificación en .local. No se publica ninguna clave.
 
-Función administrativa, autenticación por invitación, pruebas remotas de persistencia/RLS, cuentas reales, SMTP externo y respaldos del proveedor continúan pendientes. Conectar Supabase cambia el backend; publicar la web requiere además alojamiento y configuración HTTPS.
+Se ejecutó scripts/verify-remote.mjs --execute: tres cuentas temporales distintas, paciente/antecedente/nota ficticios, atención, recuperación del temporizador y sesión de navegador tras recarga, pago idempotente, historial/reportes y RLS. El navegador solo consultó el host remoto indicado. La limpieza por UUID propios terminó; quedaron cero pacientes, visitas, pagos, notas, terapias, perfiles y usuarios Auth en remoto. No se dejaron cuentas de prueba para acceso habitual.
 
-**Dirección: http://localhost:5174.** Está conectada a Supabase local en Docker (PostgreSQL 17, Auth, API y Edge Functions reales). No pulsar Explorar demostración para probar guardados: ingresar con una cuenta ficticia.
+**Para empezar con cuentas reales:** completar config/team.json y ejecutar npm run team:check; preparar SMTP y luego npm run team:invite. Cada persona define su contraseña por invitación. Los precios de Tarifa 1/2 siguen sin configurar y no se copiaron las tarifas ficticias de Docker. Pendientes: cuentas reales, SMTP externo, respaldo/restauración del proveedor, audio físico Safari/iPhone/iPad y publicación HTTPS. Al publicar, actualizar Site URL, redirects y APP_ORIGIN.
+
+### Entorno local conservado (separado del remoto)
+
+Los 7 pacientes, 22 visitas y 32 pagos ficticios previos siguen en Docker. Las siguientes instrucciones son para el entorno local, **no para la nube**. local:setup reemplaza .env.local por conexión local: no ejecutarlo para preparar el remoto. Para alternar temporalmente, guardar primero la configuración remota en un archivo privado dentro de .local, restaurar .local/env-local-before-cloud a .env.local y reiniciar Vite. Para regresar, restaurar la configuración remota guardada. Las pruebas test:connected están restringidas al backend local y requieren el frontend conectado al mismo entorno.
+
+**Dirección al seleccionar configuración local: http://localhost:5174.** Se conecta a Supabase local en Docker (PostgreSQL 17, Auth, API y Edge Functions reales). No pulsar Explorar demostración para probar guardados: ingresar con una cuenta ficticia.
 
 Las tres cuentas de prueba y sus **contraseñas aleatorias distintas** están en `.local/test-accounts.json`, archivo privado excluido de Git y bloqueado por el servidor HTTP. Abrirlo en el editor local. Los correos son `admin.prueba@centro.example`, `terapeuta.prueba@centro.example` y `recepcion.prueba@centro.example`. Administración no tiene permiso clínico; recepción incluye cobros. Ninguna contraseña real o clave privilegiada se publica en esta documentación.
 

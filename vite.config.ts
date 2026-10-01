@@ -11,6 +11,7 @@ export default defineConfig({
         "**/*.{crt,pem}",
         "**/.git/**",
         "**/.local/**",
+        "**/backups/**",
         "**/config/team.json",
       ],
     },
