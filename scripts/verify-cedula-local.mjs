@@ -3,6 +3,13 @@ import assert from "node:assert/strict";
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID, randomBytes } from "node:crypto";
 const remote = process.argv.includes("--remote");
+const publicOrigin = process.env.VERIFY_PUBLIC_ORIGIN;
+// Ejecutar fetch en el navegador público ejercita OPTIONS y CORS reales.
+const browser = publicOrigin
+  ? await (await import("@playwright/test")).chromium.launch()
+  : null;
+const page = browser ? await browser.newPage() : null;
+if (page) await page.goto(publicOrigin);
 const credentials = JSON.parse(
   await readFile(
     remote ? ".local/remote-admin.json" : ".local/supabase-admin.json",
@@ -93,20 +100,34 @@ try {
       fuente: "GoMeta",
     }),
   );
-  const request = (id, token) =>
-    fetch(
-      process.argv.includes("--via-app")
-        ? `http://localhost:5174/api/cedula/${id}`
-        : `${credentials.url}/functions/v1/cedula/${id}`,
-      {
-        headers: {
-          apikey: credentials.publicKey,
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
+  const request = async (id, token) => {
+    const url = process.argv.includes("--via-app")
+      ? `http://localhost:5174/api/cedula/${id}`
+      : `${credentials.url}/functions/v1/cedula/${id}`;
+    const headers = {
+      apikey: credentials.publicKey,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+    if (!page) return fetch(url, { headers });
+    const result = await page.evaluate(
+      async ({ url, headers }) => {
+        const response = await fetch(url, { headers });
+        return {
+          status: response.status,
+          body: await response.text(),
+          source: response.headers.get("X-Consulta-Origen"),
+        };
       },
+      { url, headers },
     );
+    return new Response(result.body, {
+      status: result.status,
+      headers: result.source ? { "X-Consulta-Origen": result.source } : {},
+    });
+  };
   assert.equal((await request("abc")).status, 400);
   assert.equal((await request(cedula)).status, 401);
+  assert.equal((await request(cedula, "jwt-ficticio-invalido")).status, 401);
   for (const account of clients) {
     const response = await request(cedula, account.token);
     assert.equal(response.status, 200);
@@ -138,10 +159,45 @@ try {
       .length,
     externalBefore,
   );
+  if (page && remote) {
+    const { expect } = await import("@playwright/test");
+    await page
+      .getByLabel("Correo electrónico", { exact: true })
+      .fill(accounts[0].email);
+    await page
+      .getByLabel("Contraseña", { exact: true })
+      .fill(accounts[0].password);
+    await page.getByRole("button", { name: "Ingresar", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Nuevo paciente", exact: true })
+      .click();
+    await page.getByLabel("Número de identificación").fill(cedula);
+    await expect(page.getByRole("dialog").getByRole("status")).toContainText(
+      "Datos de caché",
+      { timeout: 15000 },
+    );
+    await expect(page.getByLabel("Nombre (y otros nombres)")).toHaveValue(
+      "PERSONA FICTICIA",
+    );
+    await page.getByLabel("Primer apellido").fill("CORRECCIÓN FICTICIA");
+    await expect(page.getByLabel("Primer apellido")).toHaveValue(
+      "CORRECCIÓN FICTICIA",
+    );
+    // No pulsar Guardar: encontrar una identidad no debe crear un paciente.
+    console.log(
+      "APROBADO: formulario público real, sesión ficticia, autocompletado desde caché y campos editables sin guardar.",
+    );
+  }
+  if (remote) {
+    ok(await service.from("profiles").update({active: false}).eq("id", accounts[0].id));
+    assert.equal((await request(cedula, clients[0].token)).status, 403);
+    console.log("APROBADO: sesión inválida rechazada (401) y usuario inactivo rechazado (403).");
+  }
   console.log(
     `APROBADO: Edge Function ${remote ? "remota" : "local"}, sesión real, cache privada, paciente existente, validación y cero llamadas externas.`,
   );
 } finally {
+  await browser?.close();
   ok(await service.from("cedula_cache").delete().eq("cedula", cedula));
   const beforeIds = quotaBefore.map((x) => x.id);
   const newEvents = ok(

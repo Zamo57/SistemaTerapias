@@ -83,11 +83,19 @@ export function PatientForm({
             );
         } else
           setMessage(
-            result.error === "not_found"
-              ? "Sin resultados. Podés registrar el nombre manualmente."
-              : result.error === "limited"
-                ? "Límite temporal alcanzado. Podés continuar manualmente."
-                : "Servicio no disponible. Podés continuar manualmente.",
+            result.error === "unauthorized"
+              ? "La sesión expiró. Ingresá de nuevo para consultar. Podés continuar manualmente."
+              : result.error === "forbidden"
+                ? "Tu cuenta no tiene permiso para consultar pacientes."
+                : result.error === "timeout"
+                  ? "La consulta agotó el tiempo de espera. Podés continuar manualmente."
+                  : result.error === "configuration"
+                    ? "La conexión de consulta no está configurada correctamente. Podés continuar manualmente."
+                    : result.error === "not_found"
+                      ? "Sin resultados. Podés registrar el nombre manualmente."
+                      : result.error === "limited"
+                        ? "Límite temporal alcanzado. Podés continuar manualmente."
+                        : "Servicio no disponible. Podés continuar manualmente.",
           );
       } catch {
         if (!controller.signal.aborted && request === sequence.current)

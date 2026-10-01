@@ -144,7 +144,7 @@ describe("GoMeta: parser y flujo simulado", () => {
     );
     await expect(
       lookupGoMeta(cedula, s, { fetch, timeout: 10, log }),
-    ).rejects.toMatchObject({ code: "unavailable" });
+    ).rejects.toMatchObject({ code: "timeout" });
     expect(log).toHaveBeenCalledWith({
       reason: "timeout",
       status: "unavailable",

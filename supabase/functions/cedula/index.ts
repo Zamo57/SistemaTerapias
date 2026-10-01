@@ -2,9 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { lookupGoMeta, LookupError } from "../_shared/cedula.ts";
 // En producción el origen debe ser explícito; el entorno local lo inyecta
 // mediante supabase/functions/.env.local.
-const origin =
-  Deno.env.get("APP_ORIGIN") ||
-  "https://sistematerapias.christianzamora5732-0d2.workers.dev";
+const origin = Deno.env.get("APP_ORIGIN") || "";
 const headers = {
   "Access-Control-Allow-Origin": origin,
   "Access-Control-Allow-Headers":

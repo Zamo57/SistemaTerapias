@@ -8,7 +8,12 @@ export type Identity = {
 export class LookupError extends Error {
   constructor(
     public code:
-      "not_found" | "unavailable" | "limited" | "invalid" | "forbidden",
+      | "not_found"
+      | "unavailable"
+      | "limited"
+      | "invalid"
+      | "forbidden"
+      | "timeout",
     public retry = 0,
   ) {
     super(code);
@@ -182,7 +187,9 @@ export async function lookupGoMeta(
       ? "limited"
       : status === "not_found"
         ? "not_found"
-        : "unavailable",
+        : reason === "timeout"
+          ? "timeout"
+          : "unavailable",
     status === "limited" ? retry : 0,
   );
 }
