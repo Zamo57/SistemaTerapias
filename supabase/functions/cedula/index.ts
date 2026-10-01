@@ -6,16 +6,18 @@ const headers = {
   "Access-Control-Allow-Headers":
     "authorization,x-client-info,apikey,content-type",
   "Access-Control-Allow-Methods": "GET,OPTIONS",
+  "Access-Control-Expose-Headers": "X-Consulta-Origen",
   "Content-Type": "application/json",
   "Cache-Control": "no-store",
 };
 Deno.serve(async (req) => {
-  const reply = (body: unknown, status = 200, retry = 0) =>
+  const reply = (body: unknown, status = 200, retry = 0, source?: string) =>
     new Response(JSON.stringify(body), {
       status,
       headers: {
         ...headers,
         ...(retry ? { "Retry-After": String(retry) } : {}),
+        ...(source ? { "X-Consulta-Origen": source } : {}),
       },
     });
   if (req.method === "OPTIONS") return new Response("ok", { headers });
@@ -56,6 +58,7 @@ Deno.serve(async (req) => {
     if (existing.error) throw new LookupError("unavailable");
     if (existing.data)
       return reply({ existing_patient_id: existing.data.id }, 409);
+    let source: "cache" | "GoMeta" | undefined;
     const result = await lookupGoMeta(
       cedula,
       {
@@ -80,9 +83,14 @@ Deno.serve(async (req) => {
           if (error) throw new LookupError("unavailable");
         },
       },
-      { log: (event) => console.log(JSON.stringify(event)) },
+      {
+        log: (event) => console.log(JSON.stringify(event)),
+        onSource: (value) => {
+          source = value;
+        },
+      },
     );
-    return reply(result);
+    return reply(result, 200, 0, source);
   } catch (e) {
     const error = e instanceof LookupError ? e : new LookupError("unavailable");
     return reply(

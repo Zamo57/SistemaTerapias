@@ -110,6 +110,7 @@ try {
   for (const account of clients) {
     const response = await request(cedula, account.token);
     assert.equal(response.status, 200);
+    assert.equal(response.headers.get("X-Consulta-Origen"), "cache");
     assert.equal((await response.json()).nombre, "PERSONA FICTICIA");
     assert.ok((await account.client.from("cedula_cache").select("*")).error);
     assert.ok(

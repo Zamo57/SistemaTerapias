@@ -8,6 +8,18 @@ const data = {
   segundo_apellido: "PRUEBA",
   fuente: "GoMeta",
 };
+for (const [source, message] of [
+  ["cache", "Datos de caché"],
+  ["GoMeta", "Respuesta recibida de GoMeta"],
+]) {
+  test(`distingue origen ${source}`, async ({ page }) => {
+    await page.route("**/mock-cedula/*", (r) =>
+      r.fulfill({ json: { data: { ...data, cedula: "000000000" }, source } }),
+    );
+    await page.getByLabel("Número de identificación").fill("000000000");
+    await expect(page.getByRole("status")).toContainText(message);
+  });
+}
 for (const [error, message] of [
   ["not_found", "Sin resultados"],
   ["unavailable", "Servicio no disponible"],

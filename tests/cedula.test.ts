@@ -75,16 +75,20 @@ describe("GoMeta: parser y flujo simulado", () => {
       state: "cached",
       data: mapGoMeta(sample, cedula)!,
     }));
-    const fetch = vi.fn();
-    expect(await lookupGoMeta(cedula, s, { fetch })).toMatchObject({
+    const fetch = vi.fn(),
+      onSource = vi.fn();
+    expect(await lookupGoMeta(cedula, s, { fetch, onSource })).toMatchObject({
       fuente: "GoMeta",
     });
     expect(fetch).not.toHaveBeenCalled();
+    expect(onSource).toHaveBeenCalledWith("cache");
   });
   it("consulta y guarda exclusivamente el resultado mínimo", async () => {
     const s = store(),
       fetch = vi.fn(async () => response(sample));
-    await lookupGoMeta(cedula, s, { fetch });
+    const onSource = vi.fn();
+    await lookupGoMeta(cedula, s, { fetch, onSource });
+    expect(onSource).toHaveBeenCalledWith("GoMeta");
     expect(fetch).toHaveBeenCalledOnce();
     expect(s.finish).toHaveBeenCalledWith(
       cedula,

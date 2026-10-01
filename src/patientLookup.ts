@@ -4,6 +4,7 @@ export type PatientLookup = {
   data?: Identity;
   existingId?: string;
   error?: string;
+  source?: "cache" | "GoMeta";
 };
 export async function lookupPatient(
   cedula: string,
@@ -25,7 +26,11 @@ export async function lookupPatient(
   const body = await response.json();
   if (response.status === 409) return { existingId: body.existing_patient_id };
   if (!response.ok) return { error: body.error || "unavailable" };
-  return { data: body };
+  const source = response.headers.get("X-Consulta-Origen");
+  return {
+    data: body,
+    source: source === "cache" || source === "GoMeta" ? source : undefined,
+  };
 }
 // Guardar una versión de la entrada y de las ediciones evita aplicar respuestas antiguas.
 export function canApplyLookup(

@@ -14,6 +14,8 @@
     "dev:local": "vite --host 127.0.0.1 --port 5174 --strictPort",
     "team:check": "node scripts/provision-team.mjs",
     "team:invite": "node scripts/provision-team.mjs --execute",
+    "team:first:check": "node scripts/provision-team.mjs --first-admin",
+    "team:first:invite": "node scripts/provision-team.mjs --first-admin --execute",
     "local:functions": "supabase functions serve --env-file supabase/functions/.env.local --network-id centro-terapias-local",
     "test:cedula:local": "node scripts/verify-cedula-local.mjs",
     "test:connected": "playwright test --config playwright.connected.config.ts"

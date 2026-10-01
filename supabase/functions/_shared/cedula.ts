@@ -102,6 +102,7 @@ export async function lookupGoMeta(
     sleep?: (ms: number) => Promise<void>;
     log?: (event: Record<string, unknown>) => void;
     timeout?: number;
+    onSource?: (source: "cache" | "GoMeta") => void;
   } = {},
 ): Promise<Identity> {
   if (!/^[0-9]{9}$/.test(cedula)) throw new LookupError("invalid");
@@ -112,7 +113,10 @@ export async function lookupGoMeta(
     await sleep(500);
     claim = await store.reserve(cedula, token, true);
   }
-  if (claim.state === "cached" && claim.data) return claim.data;
+  if (claim.state === "cached" && claim.data) {
+    options.onSource?.("cache");
+    return claim.data;
+  }
   if (claim.state !== "owner")
     throw new LookupError(
       claim.state === "limited"
@@ -169,7 +173,10 @@ export async function lookupGoMeta(
     options.log?.({ reason, status, duration_ms: Date.now() - start });
     await store.finish(cedula, token, status, result, retry);
   }
-  if (result) return result;
+  if (result) {
+    options.onSource?.("GoMeta");
+    return result;
+  }
   throw new LookupError(
     status === "limited"
       ? "limited"

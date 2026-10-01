@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { loadEnvFile } from "node:process";
 import { createClient } from "@supabase/supabase-js";
 const execute = process.argv.includes("--execute");
+const firstAdmin = process.argv.includes("--first-admin");
 try {
   loadEnvFile(".env.admin.local");
 } catch {
@@ -22,7 +23,13 @@ if (
 )
   throw new Error("El origen debe usar HTTPS.");
 const emails = new Set();
-for (const user of config.users) {
+// El alta inicial no debe obligar a inventar las otras dos identidades pendientes.
+const definitions = firstAdmin ? [config.users[0]] : config.users;
+if (firstAdmin && !definitions[0].permissions?.includes("admin"))
+  throw new Error(
+    "El primer integrante debe tener permiso administrativo explícito.",
+  );
+for (const user of definitions) {
   if (
     typeof user.name !== "string" ||
     user.name.trim().length < 2 ||
@@ -40,14 +47,18 @@ for (const user of config.users) {
     );
   emails.add(user.email.toLowerCase());
 }
-if (!config.users.some((u) => u.permissions.includes("admin")))
+if (!definitions.some((u) => u.permissions.includes("admin")))
   throw new Error("Debe existir un administrador.");
 console.log(
-  "Configuración válida: tres identidades individuales, permisos explícitos y contraseña propia mediante enlace de invitación.",
+  firstAdmin
+    ? "Configuración válida para primera cuenta administrativa; las otras identidades quedan pendientes."
+    : "Configuración válida: tres identidades individuales, permisos explícitos y contraseña propia mediante enlace de invitación.",
 );
 if (!execute) {
   console.log(
-    "Vista previa sin crear ni enviar: npm run team:invite ejecuta el alta con la configuración local.",
+    firstAdmin
+      ? "Vista previa sin crear ni enviar: npm run team:first:invite ejecuta únicamente el alta inicial."
+      : "Vista previa sin crear ni enviar: npm run team:invite ejecuta el alta con la configuración local.",
   );
   process.exit(0);
 }
@@ -65,7 +76,22 @@ if (error)
   throw new Error(
     "No se pudo acceder a Auth. Revisá credencial de servidor sin publicarla.",
   );
-for (const definition of config.users) {
+if (firstAdmin) {
+  const { data: admins, error } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("active", true)
+    .contains("permissions", ["admin"]);
+  if (error) throw new Error("No se pudo comprobar el alta inicial.");
+  const identity = list.users.find(
+    (u) => u.email?.toLowerCase() === definitions[0].email.toLowerCase(),
+  );
+  if (admins.some((p) => p.id !== identity?.id))
+    throw new Error(
+      "Ya hay una cuenta administrativa activa; utilizar el flujo habitual de invitaciones.",
+    );
+}
+for (const definition of definitions) {
   const existing = list.users.find(
     (u) => u.email?.toLowerCase() === definition.email.toLowerCase(),
   );
@@ -86,17 +112,24 @@ for (const definition of config.users) {
     definition.email,
     { redirectTo: config.origin },
   );
-  if (error)
+  if (error) {
+    // Solo estado/código: el mensaje del proveedor puede contener la dirección del destinatario.
+    console.error(
+      JSON.stringify({
+        action: "invite_failed",
+        status: error.status,
+        code: error.code || "unknown",
+      }),
+    );
     throw new Error(
       "Falló una invitación. Revisá Auth, URLs permitidas y SMTP; no se continúa el lote.",
     );
-  const { error: profileError } = await admin
-    .from("profiles")
-    .insert({
-      id: data.user.id,
-      name: definition.name.trim(),
-      permissions: definition.permissions,
-    });
+  }
+  const { error: profileError } = await admin.from("profiles").insert({
+    id: data.user.id,
+    name: definition.name.trim(),
+    permissions: definition.permissions,
+  });
   if (profileError) {
     await admin.auth.admin.deleteUser(data.user.id);
     throw new Error(

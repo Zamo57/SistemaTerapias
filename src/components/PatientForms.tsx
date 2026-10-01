@@ -71,7 +71,11 @@ export function PatientForm({
               segundo_apellido: result.data.segundo_apellido,
             });
             setMessage(
-              "Datos sugeridos por GoMeta. Revisalos antes de guardar.",
+              result.source === "cache"
+                ? "Datos de caché (fuente GoMeta). No se consultó el proveedor. Revisalos antes de guardar."
+                : result.source === "GoMeta"
+                  ? "Respuesta recibida de GoMeta en esta consulta. Revisala antes de guardar."
+                  : "Datos sugeridos por GoMeta. Revisalos antes de guardar.",
             );
           } else
             setMessage(

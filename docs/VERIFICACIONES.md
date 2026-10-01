@@ -99,3 +99,9 @@ Muestra real obtenida por el propietario, anonimizada conservando claves y tipos
 Los mocks de GoMeta no equivalen a nuevas pruebas live del proveedor. La muestra del propietario acredita solo esa consulta puntual. Pendientes originales de SMTP externo, cuentas reales, respaldo/restauración del proveedor, audio Safari y publicación web HTTPS continúan sin aprobarse. Véase docs/GOMETA.md.
 
 La ruta propia /api/cedula también se comprobó contra el remoto mediante el proxy de Vite: autenticación, caché y paciente existente aprobados, sin consumo de GoMeta. Las últimas 22 pruebas de interfaz incluyen los tres estados de fallo y mantienen captura manual.
+
+## Preparación del acceso inicial
+
+Sin identidades reales configuradas ni perfiles administrativos activos. Alta individual inicial preparada mediante team:first:check/team:first:invite, sin exigir nombres/correos de los otros dos integrantes. No se enviaron invitaciones reales: falta el correo y nombre confirmados. Inspección privada de configuración sin SMTP personalizado declarado; entrega de invitación no comprobada. Se mantuvo signup deshabilitado y Auth activo.
+
+La función cedula expone X-Consulta-Origen (cache/GoMeta) y el formulario distingue ambos caminos. 50 pruebas de lógica/PostgreSQL, 26 de interfaz y compilación aprobadas; función local con caché ficticia devuelve origen cache sin consumir el proveedor. Función remota actualizada. No se realizó una consulta live de la cédula del propietario ni se aprobó su prueba personal. Guía: docs/ACCESO_INICIAL.md.
