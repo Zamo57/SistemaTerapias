@@ -3,6 +3,9 @@ import type { Row } from "./domain";
 const url = import.meta.env.VITE_SUPABASE_URL;
 const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const environmentLabel = import.meta.env.VITE_ENVIRONMENT_LABEL || "";
+// En producción se fija por variable para que Auth no dependa del origen accidental.
+export const publicAppUrl =
+  import.meta.env.VITE_PUBLIC_APP_URL || window.location.origin;
 export const supabase =
   url && key
     ? createClient(url, key, {

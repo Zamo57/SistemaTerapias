@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { ArrowRight } from "lucide-react";
-import { supabase } from "../data";
+import { publicAppUrl, supabase } from "../data";
 import { Field } from "./ui";
 
 export function Login({
@@ -60,7 +60,7 @@ export function Login({
         disabled={!email || busy}
         onClick={async () => {
           const { error } = await supabase!.auth.resetPasswordForEmail(email, {
-            redirectTo: location.origin,
+            redirectTo: publicAppUrl,
           });
           if (error) onError(error.message);
           else

@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Plus, ShieldCheck } from "lucide-react";
 import Papa from "papaparse";
-import { supabase, rpc, type Store } from "../data";
+import { publicAppUrl, supabase, rpc, type Store } from "../data";
 import { cents, normalize, type Row } from "../domain";
 import { Field } from "./ui";
 import { Modal } from "./ui";
@@ -386,7 +386,7 @@ export function InviteForm({
               permissions: ["admin", "clinical", "reception", "finance"].filter(
                 (p) => f.get(p),
               ),
-              redirectTo: location.origin,
+              redirectTo: publicAppUrl,
             },
           });
           if (error)
