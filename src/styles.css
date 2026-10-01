@@ -1,8 +1,11 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
+@font-face { font-family: Poppins; src: url("/fonts/poppins-400.ttf") format("truetype"); font-style: normal; font-weight: 400; font-display: swap; }
+@font-face { font-family: Poppins; src: url("/fonts/poppins-500.ttf") format("truetype"); font-style: normal; font-weight: 500; font-display: swap; }
+@font-face { font-family: Poppins; src: url("/fonts/poppins-600.ttf") format("truetype"); font-style: normal; font-weight: 600; font-display: swap; }
+@font-face { font-family: Poppins; src: url("/fonts/poppins-700.ttf") format("truetype"); font-style: normal; font-weight: 700; font-display: swap; }
 :root {
-  font-family: "DM Sans", system-ui, sans-serif;
+  font-family: Poppins, system-ui, sans-serif;
   color: #203b38;
-  background: #f1f5f4;
+  background: #edf4f0;
   font-synthesis: none;
   font-weight: 400;
   --accent: #17695d;
@@ -13,8 +16,10 @@
 body {
   margin: 0;
   background:
-    radial-gradient(ellipse at 90% 0%, #dcece6 0, transparent 44%),
-    radial-gradient(ellipse at 10% 90%, #e0e9f3 0, transparent 55%), #f3f6f5;
+    radial-gradient(ellipse at 84% 8%, #c9e6d9 0, transparent 38%),
+    radial-gradient(ellipse at 8% 78%, #dcebe4 0, transparent 44%),
+    radial-gradient(ellipse at 72% 90%, #e1eee8 0, transparent 36%), #edf4f0;
+  background-attachment: fixed;
 }
 button,
 input,
@@ -74,7 +79,7 @@ h1,
 h2,
 h3,
 strong {
-  font-family: "Manrope", system-ui, sans-serif;
+  font-family: Poppins, system-ui, sans-serif;
 }
 h1 {
   font-size: 32px;
@@ -129,11 +134,13 @@ small {
   margin-top: 12px;
 }
 .glass {
-  background: #ffffffb8;
-  backdrop-filter: blur(16px);
-  border: 1px solid #ffffff;
+  background: linear-gradient(145deg, #fffffff0, #f7fcf9d9);
+  backdrop-filter: blur(20px) saturate(135%);
+  -webkit-backdrop-filter: blur(20px) saturate(135%);
+  border: 1px solid #ffffffd9;
   box-shadow:
-    0 5px 20px #2e625208,
+    0 12px 34px #18473212,
+    0 2px 8px #18473208,
     inset 0 1px 0 #ffffff;
 }
 .app {
@@ -149,7 +156,9 @@ small {
   padding: 30px 18px 18px;
   border-right: 1px solid #dde6e1;
   z-index: 10;
-  background: #ffffffb5;
+  background: #f8fcf9db;
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
 }
 .brand {
   display: flex;
@@ -407,11 +416,14 @@ main {
   gap: 20px;
 }
 .panel {
-  background: #ffffffb8;
-  border: 1px solid #fff;
-  box-shadow: 0 6px 22px #446d5705;
-  border-radius: 15px;
-  padding: 24px;
+  min-width: 0;
+  background: linear-gradient(145deg, #fffffff0, #f8fcf9d9);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  border: 1px solid #ffffffd9;
+  box-shadow: 0 14px 36px #17452e0d, inset 0 1px 0 #ffffff;
+  border-radius: 18px;
+  padding: 26px;
   margin-bottom: 22px;
 }
 .panel-heading {
@@ -457,7 +469,10 @@ main {
   padding: 17px;
   border: 1px solid #dce9df;
   border-radius: 13px;
-  background: linear-gradient(135deg, #f2f8f4, #ffffff8c);
+  background: linear-gradient(145deg, #ffffffed, #e8f3eddb);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 26px #17452e10, inset 0 1px 0 #ffffff;
 }
 .timer-card p {
   font-size: 11px;
@@ -465,7 +480,7 @@ main {
   margin-bottom: 12px;
 }
 .timer {
-  font-family: "Manrope", sans-serif;
+  font-family: Poppins, sans-serif;
   font-size: 36px;
   font-weight: 600;
   letter-spacing: 2px;
@@ -925,10 +940,12 @@ td button {
   width: min(640px, 100%);
   max-height: 92vh;
   overflow: auto;
-  background: #fbfdfb;
-  border: 1px solid white;
-  border-radius: 18px;
-  box-shadow: 0 20px 80px #14392b33;
+  background: linear-gradient(145deg, #fffffff7, #f2f8f4f2);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid #ffffffed;
+  border-radius: 22px;
+  box-shadow: 0 24px 90px #14392b3d, inset 0 1px 0 white;
   padding: 27px;
 }
 .modal > header {
@@ -1231,16 +1248,25 @@ code {
   }
 }
 @media (max-width: 480px) {
+  .filters { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .filters > *, .filters input, .filters select { min-width: 0; }
+}
+@media (max-width: 480px) {
   .sidebar .brand {
     display: none;
   }
   .page-heading {
     align-items: flex-start;
     gap: 12px;
+    flex-direction: column;
   }
+  .page-heading h1 { font-size: clamp(21px, 6vw, 26px); line-height: 1.2; letter-spacing: -.6px; max-width: 18ch; }
+  .page-heading .muted { line-height: 1.45; max-width: 34ch; }
+  .page-heading > .primary { flex-shrink: 0; min-height: 44px; }
   .page-heading > .primary {
     padding: 10px;
     font-size: 10px;
+    align-self: flex-start;
   }
   .quick-actions strong {
     font-size: 10px;
@@ -1277,6 +1303,18 @@ code {
   .top-date {
     display: none;
   }
+}
+.rate-duration { color: var(--accent); font-size: 24px; font-weight: 600; margin: 4px 0 18px; }
+@media (max-width: 800px) {
+  button { min-height: 46px; }
+  .panel { border-radius: 16px; }
+}
+@media (max-width: 360px) {
+  main { padding-left: 12px; padding-right: 12px; }
+  .quick-actions { grid-template-columns: 1fr 1fr; }
+  .quick-actions > button { min-width: 0; }
+  .quick-actions strong { overflow-wrap: anywhere; }
+  .page-heading { flex-wrap: wrap; }
 }
 @media (prefers-reduced-motion: reduce) {
   * {

@@ -10,7 +10,7 @@ Las instrucciones de prueba siguientes corresponden al backend local: restaurar 
 
 Abrir **http://localhost:5174** e ingresar, sin seleccionar Explorar demostración. Consultar el correo y la contraseña individual en `.local/test-accounts.json` mediante el editor de este equipo. No es un archivo público del navegador. Usar exclusivamente nombres/documentos ficticios.
 
-1. **Recepción** (`recepcion.prueba@centro.example`): registrar un paciente llamado `Paciente FICTICIO de prueba`, abrirlo y crear una atención. Seleccionar `Terapeuta · FICTICIO`, `Terapia manual · FICTICIO`, 60 minutos y Tarifa 1. El precio de ensayo es ₡57.000. Se puede probar Tarifa 2 o modificable con montos ficticios; no son precios aprobados del centro.
+1. **Recepción** (`recepcion.prueba@centro.example`): registrar un paciente llamado `Paciente FICTICIO de prueba`, abrirlo y crear una atención. Seleccionar `Terapeuta · FICTICIO`, `Terapia manual · FICTICIO`, Tarifa 1 (30 min, ₡28.500) o Tarifa 2 (60 min, ₡57.000). El monto personalizado permite elegir otra duración e importe.
 2. Atenciones → Iniciar; recargar. Inicio vuelve a abrirse, conservando la cuenta y el temporizador. Pausar, recargar de nuevo y continuar. Esperar la confirmación del cambio antes de la siguiente acción; los controles se deshabilitan mientras guardan.
 3. Finalizar y abrir el historial del paciente. Con recepción no aparecen las notas clínicas. La visita cuenta como una sesión, aunque incluya más de una terapia.
 4. Cobros → registrar un pago efectivo completo o un abono. Para SINPE de ensayo usar el receptor FICTICIO; simular la verificación humana solo con datos de prueba. El pago pendiente no reduce el saldo. Recargar y comprobar pagos y reportes; un cobro completo quita la visita de la lista de saldos.
@@ -23,7 +23,7 @@ Los pacientes, visitas, notas, temporizadores y pagos de este modo se guardan en
 
 1. Inicio → Buscar paciente. Escribir cédula con o sin guiones; también acepta nombre o teléfono.
 2. Abrir la ficha: última visita, sesiones finalizadas y línea de tiempo. Antecedentes y notas solo aparecen con permiso clínico. El filtro Desde permite recuperar visitas antiguas.
-3. Nueva atención: profesional responsable, terapia(s), 30/60 minutos y **Tarifa 1**, **Tarifa 2** o **Tarifa modificable**. Confirmar duración y monto visibles. Recepción conserva su identidad como autora aunque seleccione a otra persona como terapeuta.
+3. Nueva atención: profesional responsable, terapia(s) y una modalidad. **Tarifa 1** selecciona 30 minutos/₡28.500; **Tarifa 2**, 60 minutos/₡57.000; **Monto personalizado** permite elegir duración y monto. Confirmá ambos antes de guardar. Los montos actuales se editan independientemente en Configuración → Tarifas. Cada sesión guarda su propio precio y duración.
 4. Atenciones → Iniciar. El temporizador puede pausarse/continuarse. Probar sonido en cada dispositivo al comienzo de la jornada.
 5. Completar notas desde Atenciones o el historial. Los borradores se guardan en la base tras una pausa breve de escritura; leer el indicador. Finalizar nota conserva versiones. Para corregir después, indicar motivo.
 6. Cuando termina el tiempo: atender/silenciar la alarma y confirmar Finalizar. El pago es independiente.

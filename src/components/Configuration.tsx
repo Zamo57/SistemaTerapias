@@ -106,8 +106,8 @@ export function Configuration({
             <button className="primary">Guardar identidad</button>
           </form>
           <p className="hint">
-            Referencia informada por el cliente: una hora ₡57.000. La asignación
-            a cada tarifa debe confirmarse.
+            Precios iniciales proporcionales a ₡57.000 por 60 minutos. Cada
+            tarifa se edita de manera independiente.
           </p>
         </section>
       )}
@@ -121,34 +121,31 @@ export function Configuration({
                   e.preventDefault();
                   const f = new FormData(e.currentTarget);
                   try {
-                    const prices: Row = {};
-                    [30, 60].forEach((m) => {
-                      const x = String(f.get(String(m)));
-                      if (x) prices[m] = cents(x);
-                    });
-                    void save("rates", { prices }, r.id);
+                    const amount = cents(String(f.get("amount")));
+                    if (amount <= 0) throw new Error("El monto debe ser mayor que cero");
+                    void save("rates", { amount }, r.id);
                   } catch (e) {
                     alert((e as Error).message);
                   }
                 }}
               >
-                {[30, 60].map((m) => (
-                  <Field key={m} label={`${m} minutos · monto en colones`}>
-                    <input
-                      name={String(m)}
-                      defaultValue={
-                        r.prices[m] === undefined ? "" : r.prices[m] / 100
-                      }
-                      placeholder="Pendiente de configurar"
-                      inputMode="decimal"
-                    />
-                  </Field>
-                ))}
+                <p className="rate-duration">{r.minutes} minutos</p>
+                <Field label="Precio de esta tarifa (₡)">
+                  <input
+                    name="amount"
+                    type="number"
+                    min="1"
+                    step="1"
+                    required
+                    defaultValue={r.amount === undefined ? "" : r.amount / 100}
+                    placeholder="Precio en colones"
+                    inputMode="numeric"
+                  />
+                </Field>
                 <button className="primary">Guardar tarifa</button>
               </form>
               <p className="hint">
-                Dejá vacío un precio sin confirmar. Los cambios solo afectan
-                sesiones nuevas.
+                El cambio es independiente y solo afecta nuevas atenciones.
               </p>
             </section>
           ))}

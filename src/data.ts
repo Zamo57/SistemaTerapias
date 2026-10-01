@@ -132,8 +132,8 @@ export function demonstration(): Store {
     },
   ];
   s.rates = [
-    { id: 1, name: "Tarifa 1", prices: {} },
-    { id: 2, name: "Tarifa 2", prices: {} },
+    { id: 1, name: "Tarifa 1", minutes: 30, amount: 2850000 },
+    { id: 2, name: "Tarifa 2", minutes: 60, amount: 5700000 },
   ];
   s.visits = [
     {

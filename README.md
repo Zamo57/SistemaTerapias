@@ -6,6 +6,8 @@ Aplicación en español para un centro pequeño en Costa Rica. React + TypeScrip
 
 ### Conectada a SistemaTerapias remoto — 1 octubre 2026
 
+**Tarifas actualizadas (1/10/2026):** se aplicó `007_fixed_rates.sql` después de guardar una copia privada en `.local/backups/rates-20261001/remote-data.json`. El remoto tenía ambas tarifas vacías; ahora Tarifa 1 es 30 min/₡28.500 y Tarifa 2 es 60 min/₡57.000. Los datos restantes se conservaron. La inspección inicial y las migraciones primeras que siguen se documentan como historial.
+
 La URL pública de producción es **https://sistematerapias.terapia.workers.dev** y utiliza **https://onyonqjatljkbytdxjmz.supabase.co**, referencia verificada en la cuenta autenticada y nombre exacto SistemaTerapias. [Tablas remotas](https://supabase.com/dashboard/project/onyonqjatljkbytdxjmz/editor). El entorno local continúa en http://localhost:5174.
 
 Se inspeccionó el destino antes de modificarlo: sin tablas/políticas en public, sin historial de migraciones, sin usuarios Auth ni archivos/buckets Storage. Copias previas de esquema y datos en backups/remote-20261001, privadas y fuera de Git. Se aplicaron 001_core, 002_import_and_hardening, 003_validation, 004_snapshot y 005_integrity; una segunda revisión confirma cero pendientes. No se ejecutó reset, no se importaron los fixtures locales y no se añadió automatización de despliegue en GitHub. La lista de ramas remotas estaba vacía; no se verificó el ajuste específico de despliegue automático del panel. El historial de migraciones ya coincide para evitar reaplicaciones por herramientas que lo respeten. [Migraciones oficiales](https://supabase.com/docs/guides/deployment/database-migrations).
@@ -14,9 +16,11 @@ Auth en producción: registro público y anónimo deshabilitados, contraseña m�
 
 Se ejecutó scripts/verify-remote.mjs --execute: tres cuentas temporales distintas, paciente/antecedente/nota ficticios, atención, recuperación del temporizador y sesión de navegador tras recarga, pago idempotente, historial/reportes y RLS. El navegador solo consultó el host remoto indicado. La limpieza por UUID propios terminó; quedaron cero pacientes, visitas, pagos, notas, terapias, perfiles y usuarios Auth en remoto. No se dejaron cuentas de prueba para acceso habitual.
 
-**Para empezar con cuentas reales:** completar config/team.json y ejecutar npm run team:check; preparar SMTP y luego npm run team:invite. Cada persona define su contraseña por invitación. Los precios de Tarifa 1/2 siguen sin configurar y no se copiaron las tarifas ficticias de Docker. El despliegue directo de Cloudflare requiere autenticación de Wrangler o que la integración GitHub del panel ejecute el commit; no se incluyen tokens en el repositorio.
+**Para empezar con cuentas reales:** completar config/team.json y ejecutar npm run team:check; las tarifas remotas iniciales son Tarifa 1 (30 min, ₡28.500) y Tarifa 2 (60 min, ₡57.000), editables independientemente en Configuración. Cada atención conserva su monto histórico.
 
 ### Entorno local conservado (separado del remoto)
+
+Docker local conserva las tarifas ficticias en matriz antigua. `007_fixed_rates.sql` aborta al detectar sus cuatro importes ambiguos, preservándolos hasta que se decida cuáles valores conservar.
 
 Los 7 pacientes, 22 visitas y 32 pagos ficticios previos siguen en Docker. Las siguientes instrucciones son para el entorno local, **no para la nube**. local:setup reemplaza .env.local por conexión local: no ejecutarlo para preparar el remoto. Para alternar temporalmente, guardar primero la configuración remota en un archivo privado dentro de .local, restaurar .local/env-local-before-cloud a .env.local y reiniciar Vite. Para regresar, restaurar la configuración remota guardada. Las pruebas test:connected están restringidas al backend local y requieren el frontend conectado al mismo entorno.
 
@@ -44,7 +48,7 @@ npm run dev:local
 
 `local:start` usa una red Docker del proyecto que publica servicios solo en 127.0.0.1; no modifica otros proyectos. `local:setup` genera `.env.local` y las cuentas ficticias de forma reutilizable, conserva pacientes y contraseñas existentes y solo completa tarifas vacías. Las migraciones se aplican al iniciar una base nueva. Los registros viven en PostgreSQL y su volumen Docker; recargar o cerrar el navegador no los borra. `db reset` reinicializa la base, por lo que no sirve para reiniciar conservando datos.
 
-Solo para prueba local: Tarifa 1 usa ₡31.000/30 min y ₡57.000/60 min; Tarifa 2 usa ₡33.000/30 min y ₡61.000/60 min. Son escenarios ficticios configurables, **no precios confirmados del negocio**. Las migraciones de producción mantienen las tarifas vacías.
+Solo para prueba local: Docker conserva el catálogo histórico de escenarios ficticios: Tarifa 1 ₡31.000/30 min y ₡57.000/60 min; Tarifa 2 ₡33.000/30 min y ₡61.000/60 min. La migración nueva se detiene ante esa matriz ambigua; no seleccione un precio ni borre los datos sin decisión administrativa.
 
 Panel local Supabase: http://localhost:54323. Buzón capturador: http://localhost:54324; las invitaciones y recuperaciones de prueba no salen a destinatarios externos. El frontend muestra una franja permanente de prueba con persistencia real. El botón Explorar demostración conserva su modo separado de solo lectura, sin guardar datos.
 
@@ -82,7 +86,7 @@ Abrir la dirección que indique Vite. Sin credenciales muestra configuración y 
 
 1. Crear un proyecto Supabase del centro. Elegir región y responsables conforme a la política de datos del negocio. No se ha creado ni desplegado un proyecto externo desde esta entrega.
 2. Copiar `.env.example` a `.env`. Configurar `VITE_SUPABASE_URL` y la clave **pública** `VITE_SUPABASE_ANON_KEY` (anon o publishable). La clave pública está protegida por RLS. Nunca colocar service-role, secret key, contraseñas de PostgreSQL o credenciales SMTP en variables VITE.
-3. Aplicar, en orden, los archivos de `supabase/migrations/` en el SQL Editor. Cada migración es transaccional; aplicar una sola vez en un proyecto nuevo. No contiene datos de pacientes ni precios asumidos. Usar historial de migraciones de Supabase CLI en despliegues posteriores.
+3. Aplicar las migraciones en orden mediante Supabase CLI y revisar primero cualquier diferencia de catálogo. `007_fixed_rates.sql` conserva montos compatibles, usa los valores iniciales solicitados para catálogos vacíos y aborta si encuentra una antigua matriz ambigua. No modifica atenciones históricas.
 4. En Auth, deshabilitar **Allow new users to sign up** y acceso anónimo. Mantener email/password para usuarios invitados. Configurar contraseña mínima de 10 caracteres, límites de intentos y confirmación de correo. Configurar Site URL y URLs de redirección con el origen HTTPS final; en desarrollo agregar el origen de Vite. [Configuración oficial](https://supabase.com/docs/guides/auth/general-configuration).
 5. Crear el primer usuario en Auth → Users → Add user. Copiar su UUID y ejecutar desde SQL Editor, reemplazando nombre y UUID:
 

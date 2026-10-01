@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Clock3 } from "lucide-react";
 import { type Store } from "../data";
 import { money, cents, type Row } from "../domain";
@@ -19,23 +19,26 @@ export function VisitForm({
   close: () => void;
 }) {
   const [minutes, setMinutes] = useState<number>(
-      patient.preferred_minutes || 60,
+      patient.preferred_minutes || 30,
     ),
     [rate, setRate] = useState<string>(
       patient.preferred_rate
         ? `Tarifa ${patient.preferred_rate}`
-        : "Tarifa modificable",
+        : "Tarifa 1",
     ),
     [amount, setAmount] = useState(""),
     [free, setFree] = useState(false),
     [selected, setSelected] = useState<string[]>([]),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
-  const configured = store.rates.find((r) => r.name === rate)?.prices[
-    String(minutes)
-  ];
+  const selectedRate = store.rates.find((r) => r.name === rate);
+  useEffect(() => {
+    if (selectedRate) setMinutes(selectedRate.minutes);
+  }, [selectedRate?.id]);
+  const custom = rate === "Monto personalizado" || rate === "Tarifa modificable";
+  const configured = selectedRate?.minutes === minutes ? selectedRate.amount : undefined;
   const value =
-    rate === "Tarifa modificable"
+    custom
       ? amount
       : configured === undefined
         ? ""
@@ -167,7 +170,7 @@ export function VisitForm({
         </Field>
         <Field label="Duración programada">
           <div className="chips">
-            {[30, 60].map((n) => (
+            {(custom ? [30, 60] : [selectedRate?.minutes || minutes]).map((n) => (
               <button
                 type="button"
                 className={minutes === n ? "chosen" : ""}
@@ -181,13 +184,13 @@ export function VisitForm({
           </div>
         </Field>
         <Field label="Modalidad de tarifa">
-          <select value={rate} onChange={(e) => setRate(e.target.value)}>
-            {["Tarifa 1", "Tarifa 2", "Tarifa modificable"].map((x) => (
+          <select value={custom ? "Monto personalizado" : rate} onChange={(e) => setRate(e.target.value)}>
+            {["Tarifa 1", "Tarifa 2", "Monto personalizado"].map((x) => (
               <option key={x}>{x}</option>
             ))}
           </select>
         </Field>
-        {rate === "Tarifa modificable" ? (
+        {custom ? (
           <div className="form-grid">
             <Field label="Monto acordado (₡)">
               <input

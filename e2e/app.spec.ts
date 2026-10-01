@@ -30,11 +30,27 @@ test("inicio, búsqueda por cédula, visita de hace un año y nueva sesión", as
   await expect(dialog).toBeVisible();
   await expect(
     dialog.getByLabel("Modalidad de tarifa").locator("option"),
-  ).toHaveText(["Tarifa 1", "Tarifa 2", "Tarifa modificable"]);
+  ).toHaveText(["Tarifa 1", "Tarifa 2", "Monto personalizado"]);
   await dialog.getByLabel("Modalidad de tarifa").selectOption("Tarifa 1");
   await expect(
-    dialog.getByText("Pendiente de configurar para 60 minutos."),
+    dialog.getByText("₡28 500,00", { exact: false }),
   ).toBeVisible();
+  await dialog.getByLabel("Modalidad de tarifa").selectOption("Tarifa 2");
+  await expect(dialog.locator(".confirmation")).toContainText("60 minutos");
+  await expect(dialog.locator(".confirmation")).toContainText("57000");
+  await dialog.getByLabel("Modalidad de tarifa").selectOption("Monto personalizado");
+  await dialog.getByLabel("Monto acordado (₡)").fill("33000");
+  await dialog.getByRole("button", {name: "30 minutos"}).click();
+  await expect(dialog.locator(".confirmation")).toContainText("30 minutos");
+  await expect(dialog.locator(".confirmation")).toContainText("33000");
+  await dialog.getByLabel("Modalidad de tarifa").selectOption("Tarifa 2");
+  await expect(dialog.locator(".confirmation")).toContainText("60 minutos");
+  await expect(dialog.locator(".confirmation")).toContainText("₡57000");
+  await dialog.getByLabel("Modalidad de tarifa").selectOption("Monto personalizado");
+  await dialog.getByLabel("Monto acordado (₡)").fill("33000");
+  await dialog.getByRole("button", {name: "30 minutos"}).click();
+  await expect(dialog.locator(".confirmation")).toContainText("30 minutos");
+  await expect(dialog.locator(".confirmation")).toContainText("₡33000");
   await page.keyboard.press("Escape");
   await expect(dialog).not.toBeVisible();
 });
@@ -55,6 +71,20 @@ test("reportes y exportación sin notas de salud", async ({ page }) => {
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Exportar cobros" }).click();
   expect((await download).suggestedFilename()).toBe("cobros.csv");
+});
+test("dashboard e ingreso mantienen el ancho en iPhone, iPad y escritorio", async ({ page }) => {
+  for (const viewport of [{width:390,height:844},{width:820,height:1180},{width:1440,height:1000}]) {
+    await page.setViewportSize(viewport);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width);
+  }
+  await page.getByRole("navigation").getByRole("button",{name:"Pacientes",exact:true}).click();
+  await page.getByRole("textbox",{name:"Buscar paciente"}).fill("1-0999-0999");
+  await page.getByRole("button",{name:"María Ejemplo · FICTICIO",exact:true}).click();
+  await page.getByRole("button",{name:"Nueva atención",exact:true}).click();
+  for (const viewport of [{width:390,height:844},{width:820,height:1180},{width:1440,height:1000}]) {
+    await page.setViewportSize(viewport);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width);
+  }
 });
 test("sonido, navegación, accesibilidad y ajuste al ancho", async ({
   page,

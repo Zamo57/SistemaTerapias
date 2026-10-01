@@ -1,5 +1,13 @@
 # Verificaciones de la entrega
 
+## Estado actualizado: tarifas fijas y diseño mirror — 1/10/2026
+
+- `007_fixed_rates.sql` aplicado al remoto tras respaldo privado. Tarifas comprobadas: Tarifa 1, 30 minutos, 2.850.000 céntimos; Tarifa 2, 60 minutos, 5.700.000 céntimos. Atenciones existentes intactas.
+- Docker local conserva valores ficticios para dos duraciones por tarifa. La migración aborta ante esa matriz ambigua y conserva las filas intactas. Decidir los precios antes de migrar Docker.
+- Vitest: 52 pruebas aprobadas, incluida preservación de importes históricos y rechazo de datos incompatibles. Playwright: dashboard y formulario comprobados en 390, 820 y 1440 px sin desbordamiento.
+- Capturas: [escritorio](capturas/dashboard-escritorio.png), [iPad](capturas/dashboard-ipad.png), [iPhone](capturas/dashboard-iphone.png), [formulario iPhone](capturas/atencion-iphone.png).
+- Cloudflare despliega los assets con Wrangler: `sistematerapias`, versión `c2ac56ea-e1be-4d3c-be02-1c755cae779d`. La URL pública respondió 200 y sirvió el hash nuevo; Chromium confirmó Poppins local activo y ancho sin desbordamiento en los tres tamaños. La prueba visual usó exclusivamente datos de demostración.
+
 Fecha: 30/09/2026 (Costa Rica). Se configuró y ejecutó **Supabase local en Docker**, con PostgreSQL 17.11, Auth, PostgREST y Edge Functions reales. No hay proyecto de producción ni credenciales externas configuradas.
 
 ## Nueva verificación conectada

@@ -24,7 +24,7 @@ erDiagram
 | visits | Paciente, atención, registrador, terapeuta, estado, duración, copia de tarifa/precio; versión |
 | notes | Motivo, síntomas, nota, respuesta, revisión única por visita, autor/fecha/motivo de corrección; inmutables y RLS clínico |
 | therapies / visit_therapies | Catálogo activo y copias del nombre aplicado; una visita puede tener varias técnicas |
-| rates | Dos tarifas; precios enteros por duración 30/60; configuración ausente no produce precio supuesto |
+| rates | Dos tarifas fijas: Tarifa 1 (30 min) y Tarifa 2 (60 min), un monto independiente por tarifa; cada visita guarda sus propios minutos y monto |
 | payments | Pagos confirmados/pendientes, método, receptor copiado, referencia, autor y confirmador; UUID único de reintento; devolución enlazada |
 | sinpe_numbers | Receptores configurables y estado activo, sin integración bancaria automática |
 | timer_events | Inicio/pausa/continuación/finalización/cancelación/alarma atendida con actor y hora |

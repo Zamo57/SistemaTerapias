@@ -35,6 +35,7 @@ describe("PostgreSQL: etapas 1, 2 y 3", () => {
     );
     await db.exec(readFileSync("supabase/migrations/004_snapshot.sql", "utf8"));
     await db.exec(readFileSync("supabase/migrations/005_integrity.sql", "utf8"));
+    await db.exec(readFileSync("supabase/migrations/007_fixed_rates.sql", "utf8"));
     await q("insert into auth.users values($1),($2),($3)", [
       admin,
       reception,
@@ -86,32 +87,24 @@ describe("PostgreSQL: etapas 1, 2 y 3", () => {
       1,
     );
   });
-  it("etapa 2: tarifas incompletas se rechazan; configura ambas y conserva snapshot", async () => {
+  it("etapa 2: tarifas fijas validan duración y conservan snapshot", async () => {
     await expect(
       as(
         reception,
-        `select create_visit($1,$2,30,'Tarifa 1',10000,false,null,array[$3::uuid])`,
+        `select create_visit($1,$2,60,'Tarifa 1',2850000,false,null,array[$3::uuid])`,
         [patient, clinical, therapy],
       ),
-    ).rejects.toThrow("pendiente");
-    await as(
-      admin,
-      `update rates set prices='{"30":2100000,"60":5700000}' where id=1`,
-    );
-    await as(
-      admin,
-      `update rates set prices='{"30":2500000,"60":6000000}' where id=2`,
-    );
+    ).rejects.toThrow("duración");
     visit = (
       await as(
         reception,
-        `select create_visit($1,$2,60,'Tarifa 1',5700000,false,null,array[$3::uuid],'2026-09-30T10:00:00-06:00') id`,
+        `select create_visit($1,$2,30,'Tarifa 1',2850000,false,null,array[$3::uuid],'2026-09-30T10:00:00-06:00') id`,
         [patient, clinical, therapy],
       )
     ).rows[0].id;
     await as(
       reception,
-      `select create_visit($1,$2,30,'Tarifa 2',2500000,false,null,array[$3::uuid])`,
+      `select create_visit($1,$2,60,'Tarifa 2',5700000,false,null,array[$3::uuid])`,
       [patient, clinical, therapy],
     );
     await as(
@@ -119,11 +112,13 @@ describe("PostgreSQL: etapas 1, 2 y 3", () => {
       `select create_visit($1,$2,30,'Tarifa modificable',0,true,'Ficticio',array[$3::uuid],'2025-09-30T10:00:00-06:00')`,
       [patient, clinical, therapy],
     );
-    await as(admin, `update rates set prices='{"60":5800000}' where id=1`);
+    await as(admin, `update rates set amount=3000000 where id=1`);
+    expect((await q("select amount from rates where id=1")).rows[0].amount).toBe(3000000);
+    expect((await q("select amount from rates where id=2")).rows[0].amount).toBe(5700000);
     expect(
       (await as(reception, "select amount from visits where id=$1", [visit]))
         .rows[0].amount,
-    ).toBe(5700000);
+    ).toBe(2850000);
     expect(
       (
         await as(
@@ -142,6 +137,8 @@ describe("PostgreSQL: etapas 1, 2 y 3", () => {
     let v = (await as(reception, "select * from visits where id=$1", [visit]))
       .rows[0];
     expect(v.status).toBe("running");
+    expect(v.minutes).toBe(30);
+    expect(v.expected_end).not.toBeNull();
     expect(v.started_at).toBeTruthy();
     expect(v.expected_end).toBeTruthy();
     await expect(
@@ -203,7 +200,7 @@ describe("PostgreSQL: etapas 1, 2 y 3", () => {
     const payment = (
       await as(
         reception,
-        "select record_payment('10000000-0000-0000-0000-000000000002',$1,3700000,'SINPE',false,$2,'Referencia') id",
+        "select record_payment('10000000-0000-0000-0000-000000000002',$1,850000,'SINPE',false,$2,'Referencia') id",
         [visit, receiver],
       )
     ).rows[0].id;
@@ -222,7 +219,7 @@ describe("PostgreSQL: etapas 1, 2 y 3", () => {
           "select sum(amount)::integer total from payments where status='confirmed'",
         )
       ).rows[0].total,
-    ).toBe(5700000);
+    ).toBe(2850000);
     await expect(
       as(
         reception,
@@ -252,7 +249,7 @@ describe("PostgreSQL: etapas 1, 2 y 3", () => {
           "select sum(case when kind='refund' then -amount else amount end)::integer total from payments where status='confirmed'",
         )
       ).rows[0].total,
-    ).toBe(5200000);
+    ).toBe(2350000);
     expect(
       (await as(admin, "select * from audit where table_name='payments'")).rows
         .length,
@@ -337,15 +334,15 @@ describe("PostgreSQL: etapas 1, 2 y 3", () => {
   });
   it("tarifas validan montos, último precio histórico y campos protegidos", async () => {
     await expect(
-      as(admin, `update rates set prices='{"30":-5}' where id=1`),
-    ).rejects.toThrow("montos");
+      as(admin, `update rates set amount=-5 where id=1`),
+    ).rejects.toThrow();
     await expect(
       as(admin, `update rates set name='Otra tarifa' where id=1`),
     ).rejects.toThrow();
     expect(
       (await as(reception, "select amount from visits where id=$1", [visit]))
         .rows[0].amount,
-    ).toBe(5700000);
+    ).toBe(2850000);
   });
   it("notas finalizadas no pueden volver a borrador y conflictos preservan revisión", async () => {
     await as(

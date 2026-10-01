@@ -101,7 +101,7 @@ test("flujo real: paciente, atención, historial, temporizador recargado, pago y
     .getByRole("button", { name: "Terapia manual · FICTICIO", exact: true })
     .click();
   await modal.getByLabel("Modalidad de tarifa").selectOption("Tarifa 1");
-  await expect(modal).toContainText("57");
+  await expect(modal).toContainText("28 500");
   await modal
     .getByRole("button", { name: "Guardar atención", exact: true })
     .click();
@@ -109,7 +109,7 @@ test("flujo real: paciente, atención, historial, temporizador recargado, pago y
   let visit = (
     await checkQuery(recep, "visits", { patient_id: patient.id })
   )[0];
-  expect(visit.amount).toBe(5700000);
+  expect(visit.amount).toBe(2850000);
   expect(visit.therapist_id).toBe(account("clinical").id);
   expect(visit.created_by).toBe(account("reception").id);
   await page
@@ -207,7 +207,7 @@ test("flujo real: paciente, atención, historial, temporizador recargado, pago y
   await expect(page.getByRole("dialog")).not.toBeVisible();
   const payments = await checkQuery(recep, "payments", { visit_id: visit.id });
   expect(payments).toHaveLength(1);
-  expect(payments[0].amount).toBe(5700000);
+  expect(payments[0].amount).toBe(2850000);
   expect(payments[0].received_by).toBe(account("reception").id);
   await page.reload();
   await page
@@ -229,7 +229,7 @@ test("flujo real: paciente, atención, historial, temporizador recargado, pago y
   ).not.toBe(before);
   await expect(
     page.locator(".metric").filter({ hasText: "Cobros netos" }),
-  ).toContainText(money(beforeAmount + 5700000));
+  ).toContainText(money(beforeAmount + 2850000));
   const reportRow = page
     .getByRole("row")
     .filter({ hasText: "Recepción · FICTICIO" });
@@ -332,8 +332,8 @@ test("tarifas y abonos reales: SINPE pendiente, idempotencia y confirmación", a
     therapy = (await checkQuery(reception, "therapies"))[0],
     sinpe = (await checkQuery(reception, "sinpe_numbers"))[0];
   for (const [rate, minutes, amount] of [
-    ["Tarifa 2", 30, 3300000],
-    ["Tarifa modificable", 60, 5700000],
+    ["Tarifa 2", 60, 5700000],
+    ["Monto personalizado", 30, 3300000],
   ] as const) {
     const { data: id, error } = await reception.rpc("create_visit", {
       p_patient: patient.id,
